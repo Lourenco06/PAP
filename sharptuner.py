@@ -1,3 +1,7 @@
+# Programador....: Lourenço Moreira (c) 2025
+# Data...........: 
+# Observações....: Guitar Tuner in Python
+
 # Bibliotecas
 import copy # Copias de Objetos e Listas
 import os # Comandos do Sistema Operativo
@@ -70,14 +74,8 @@ current_string = 0
 done = False
 
 def callback(indata, frames, time, status):
-    global current_string, done, TARGET_FREQUENCIES  
-
+    global current_string, done, TARGET_FREQUENCIES
     static_text = f"Toca a {current_string + 1}ª corda ({TARGET_FREQUENCIES[current_string]} Hz)."
-
-    if status:
-        if "overflow" in str(status):
-            return  
-        print(status)
 
     if any(indata):
         if not hasattr(callback, "window_samples"):
@@ -94,16 +92,13 @@ def callback(indata, frames, time, status):
             print(static_text)
             print("Nota mais próxima: ...")
             return
-
+        
         hann_samples = callback.window_samples * HANN_WINDOW
         magnitude_spec = abs(scipy.fft.fft(hann_samples)[:len(hann_samples)//2])
-
         for i in range(int(62 / DELTA_FREQ)):
             magnitude_spec[i] = 0
-
         max_ind = np.argmax(magnitude_spec)
         max_freq = max_ind * (SAMPLE_FREQ / WINDOW_SIZE)
-
         closest_note, closest_pitch = find_closest_note(max_freq)
 
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -111,8 +106,8 @@ def callback(indata, frames, time, status):
         print(f"Nota mais próxima: {closest_note} ({max_freq} Hz).")
 
         if abs(max_freq - TARGET_FREQUENCIES[current_string]) <= TOLERANCE:
-            escolha = input("Corda afinada! (Enter para avançar, 'b' para voltar): ").strip().lower()
-            if escolha == "b":
+            escolha = input("Corda afinada! (Enter para avançar, 'v' para voltar): ").strip().lower()
+            if escolha == "v":
                 current_string = max(0, current_string - 1)
             else:
                 current_string += 1
